@@ -1,4 +1,6 @@
-resource oci_core_instance freedigs_compute_01 {
+resource oci_core_instance freedigs_compute {
+  for_each = var.compute_hosts
+
   compartment_id = var.compartment_ocid
   availability_domain = var.availability_domain_map[var.oci_region]
 
@@ -11,26 +13,26 @@ resource oci_core_instance freedigs_compute_01 {
     }))
   }
 
-  shape = var.compute_shape
+  shape = var.compute_shapes[each.value.arch]
   shape_config {
-    ocpus = var.compute_cores
-    memory_in_gbs = var.compute_ram_gb
+    ocpus = each.value.cores
+    memory_in_gbs = each.value.ram_gb
   }
 
   source_details {
     source_type = "image"
-    source_id = var.compute_image_ocid_map[var.oci_region]
-    boot_volume_size_in_gbs = var.compute_disk_gb
+    source_id = var.compute_image_ocid_map["${var.oci_region}.${each.value.arch}.${var.compute_os_label}"]
+    boot_volume_size_in_gbs = each.value.disk_gb
   }
 
   create_vnic_details {
-    hostname_label = var.compute_hostname
+    hostname_label = each.value.hostname
     assign_public_ip = "true"
     assign_private_dns_record = "true"
     subnet_id = oci_core_subnet.freedigs_subnet_main.id
   }
 
-  display_name = var.compute_hostname
+  display_name = each.value.hostname
 
   instance_options {
     are_legacy_imds_endpoints_disabled = "true"

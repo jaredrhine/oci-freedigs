@@ -1,4 +1,5 @@
 secret*.auto.tfvars
+config*.auto.tfvars
 
 *.tfstate
 *.tfstate.*
@@ -7,4 +8,5 @@ override.tf
 *_override.tf
 
 .terraform/
-.terraform.lock.hcl
+
+WIP.md

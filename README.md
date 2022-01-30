@@ -25,16 +25,18 @@ network instance.
 - No-hands provisioning, low-hassle, and resilient to being deleted
 - Encode knowledge about how to build a useful OCI-based network
   appliance, to minimize relearning later (Infrastructure as Code)
+- Match the author's preferred configuration. Not intended to be
+  generally reusable or highly configurable for multiple use cases.
 
 TODO:
 - Fix disabling of motd
+- Add hostname override for tailscaled setup
 - Handle availability zones differently since user-specific
 - Support multiple ssh keys
 - Create additional arm64 servers
 - OCI budget monitoring
 - OCI NAT setup
 - HTTP/S edge server, Letencrypt
-- Creation of 2x additional OCI micro-sized Intel compute servers
 
 ## Background
 
@@ -56,16 +58,16 @@ pattern for those willing to admin such a cluster.
 ## Cluster specification
 
 Standards:
-- ARM (arm64) for CPU architecture
+- ARM (arm64/aarch64) for primary CPU architecture (amd64 free resources also created)
 - Ubuntu 20.04 for OS
 - Bash for shell
-- [Tailscale](https://tailscale.com/) ([Wireguard](https://www.wireguard.com/)) for VPN
-- TCP open on ports 22 (all interfaces)
+- [Tailscale](https://tailscale.com/) ([Wireguard](https://www.wireguard.com/)) for VPN. Tailscale DNS integration supported.
+- TCP open on ports 22 (all interfaces) for ssh inbound
 - [`ufw`](https://en.wikipedia.org/wiki/Uncomplicated_Firewall) for firewall rules
-- Extra packages installed: ag, build-essential, docker, emacs-nox, fswatch, git, go, java, jq, keychain, kubectl, mosh, pwgen, python, ruby, socat, sshfs, swaks, tig, tshark, uuid, zip
+- Extra packages installed: ag, build-essential, caddy, ddclient, direnv, docker, dstat, emacs-nox, fswatch, fzf, git, go, java, jq, keychain, kubeadm, kubectl, lua, mosh, netcat, nmap, nodejs, perl, procps, psutils, pwgen, python, ruby, s3cmd, socat, sshfs, swaks, tig, tmux, tshark, unintended-upgrades, uuid, zip, zsh
 
 Terraform components:
-- Compute instance (`oci_core_instance freedigs_compute_01`)
+- Compute instance (`oci_core_instance freedigs_compute`)
   - Shape: CPU arch, core count, RAM size
   - Boot volume
     - Block device size
@@ -135,8 +137,14 @@ Terraform.
       - `compute_username`
       - `compute_ssh_public_key`
       - `tailscale_auth_key`
-1. Run `terraform init; terraform destroy; terraform apply -auto-approve`
+1. Configure the cluster
+   1. Copy the `config.auto.tfvars.example` file to `config.auto.tfvars`.
+   1. Visit the OCI [web console](https://cloud.oracle.com/) and look up your availability domain for your region.
+   1. Set the `availability_domain_map` variable to match your OCI-provided availability group.
+   1. Configure the `compute_hosts` variable. See the example. Include at least one entry. Give each entry a label. Set all of `hostname`, `arch`, `cores`, `ram_gb`, `disk_gb` parameters for each block.
+1. Run `terraform init -upgrade; terraform destroy; while ! terraform apply -auto-approve; do echo again; done`
    - ...or any Terraform plan management and rollout scheme you prefer
+   - You may very well have to apply multiple times to successfully create all resources. Oracle can return an "Out of host capacity" error.
 1. Copy the IP address shown at the end of the Terraform run and ssh to it: `ssh COMPUTE_USERNAME@IP.ADD.RESS`
 
 ## Inspiration
@@ -152,3 +160,8 @@ Terraform.
   - https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_instance
 - Terraform
   - https://github.com/hashicorp/terraform
+- Tailscale
+  - https://tailscale.com/kb/1149/cloud-oracle/
+- Kubernetes
+  - https://faun.pub/free-ha-multi-architecture-kubernetes-cluster-from-oracle-c66b8ce7cc37
+  - https://carlosedp.medium.com/building-a-hybrid-x86-64-and-arm-kubernetes-cluster-e7f94ff6e51d
