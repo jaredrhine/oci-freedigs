@@ -9,4 +9,6 @@ override.tf
 
 .terraform/
 
+.envrc
+
 WIP.md

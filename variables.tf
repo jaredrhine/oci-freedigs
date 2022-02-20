@@ -61,3 +61,4 @@ variable compute_ssh_public_key {}
 variable tailscale_auth_key {}
 variable signing_key_fingerprint {}
 variable signing_key_private_path {}
+variable cloudinit_script_url {}

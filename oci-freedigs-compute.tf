@@ -6,11 +6,7 @@ resource oci_core_instance freedigs_compute {
 
   metadata = {
     ssh_authorized_keys = var.compute_ssh_public_key
-    user_data = base64encode(templatefile("cloudinit-userdata.tpl.yaml", {
-      compute_username = var.compute_username,
-      compute_ssh_public_key = var.compute_ssh_public_key,
-      tailscale_auth_key = var.tailscale_auth_key,
-    }))
+    user_data = "${data.template_cloudinit_config.multipart.rendered}"
   }
 
   shape = var.compute_shapes[each.value.arch]
@@ -48,5 +44,47 @@ resource oci_core_instance freedigs_compute {
       desired_state = "ENABLED"
       name = "Compute Instance Monitoring"
     }
+  }
+}
+
+data "template_file" "cloudconfig" {
+  template = "${file("${path.module}/cloudinit-config.tpl.yaml")}"
+  vars = {
+    compute_username = var.compute_username,
+    compute_ssh_public_key = var.compute_ssh_public_key,
+    tailscale_auth_key = var.tailscale_auth_key,
+  }
+}
+
+data "template_file" "boothook" {
+  template = "${file("${path.module}/cloudinit-boothook.tpl.sh")}"
+}
+
+data "template_file" "script" {
+  template = "${file("${path.module}/cloudinit-script.tpl.sh")}"
+}
+
+data "template_cloudinit_config" "multipart" {
+  gzip          = true
+  base64_encode = true
+
+  part {
+    content_type = "text/cloud-boothook"
+    content = "${data.template_file.boothook.rendered}"
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content = "${data.template_file.cloudconfig.rendered}"
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content = "${data.template_file.script.rendered}"
+  }
+
+  part {
+    content_type = "text/x-include-url"
+    content = var.cloudinit_script_url
   }
 }

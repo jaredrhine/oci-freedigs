@@ -4,7 +4,7 @@ Repository URL: https://github.com/jaredrhine/oci-freedigs
 
 Author: Jared Rhine <jared@wordzoo.com>
 
-Keywords: Terraform, Oracle Cloud Infrastructure, OCI, Tailscale
+Keywords: Terraform, Oracle Cloud Infrastructure, OCI, Tailscale, free, cloud computing, ARM
 
 ## Purpose
 
@@ -28,26 +28,16 @@ network instance.
 - Match the author's preferred configuration. Not intended to be
   generally reusable or highly configurable for multiple use cases.
 
-TODO:
-- Fix disabling of motd
-- Add hostname override for tailscaled setup
-- Handle availability zones differently since user-specific
-- Support multiple ssh keys
-- Create additional arm64 servers
-- OCI budget monitoring
-- OCI NAT setup
-- HTTP/S edge server, Letencrypt
-
 ## Background
 
 Oracle provides generous (when compared to competitors' offerings)
 free networking services. In particular, their free RAM allocation of
 24GB for ARM-based servers is attractive.
 
-Oracle provides a free pricing tier supporting about one month's a
+Oracle provides a [free pricing tier](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) supporting a
 single always-on arm64 server with 4x CPU, 24 GB RAM, 200 GB disk, and
-healthy bandwidth allotment. You can make multiple smaller servers
-that add up to these limits, as well as 2x "micro" sized Intel
+healthy bandwidth allotment. You can create up to four smaller servers
+that add up to these limits, which can include 2x "micro" sized (2 core, 1GB RAM) Intel
 servers and various other cloud services.
 
 Running ARM servers adds some hassles and limitations depending on
@@ -62,9 +52,9 @@ Standards:
 - Ubuntu 20.04 for OS
 - Bash for shell
 - [Tailscale](https://tailscale.com/) ([Wireguard](https://www.wireguard.com/)) for VPN. Tailscale DNS integration supported.
-- TCP open on ports 22 (all interfaces) for ssh inbound
-- [`ufw`](https://en.wikipedia.org/wiki/Uncomplicated_Firewall) for firewall rules
-- Extra packages installed: ag, build-essential, caddy, ddclient, direnv, docker, dstat, emacs-nox, fswatch, fzf, git, go, java, jq, keychain, kubeadm, kubectl, lua, mosh, netcat, nmap, nodejs, perl, procps, psutils, pwgen, python, ruby, s3cmd, socat, sshfs, swaks, tig, tmux, tshark, unintended-upgrades, uuid, zip, zsh
+- [`ufw`](https://en.wikipedia.org/wiki/Uncomplicated_Firewall) for firewall rules. TCP open on ports 22 (all interfaces) for ssh inbound. UDP open on 41641 for tailscale.
+- Minimal language frameworks installed: go, java, lua, nodejs, perl, python2, python3, ruby, rust
+- Extra packages installed: ag, buffer, build-essential, ctop, ddclient, direnv, docker, dstat, emacs-nox, fakeroot, fswatch, fzf, git, hwinfo, iotop, jq, keychain, kubeadm, kubectl, mosh, netcat, nmap, p7zip, procps, psutils, pv, pwgen, runit, s3cmd, s3fuse, s4cmd, socat, sshfs, ssh-tools, swaks, tig, tmux, tree, tshark, unicorn, unintended-upgrades, uuid, zip, zsh. Libraries for bz, curl, readline, sqlite, openssl.
 
 Terraform components:
 - Compute instance (`oci_core_instance freedigs_compute`)
@@ -165,3 +155,15 @@ Terraform.
 - Kubernetes
   - https://faun.pub/free-ha-multi-architecture-kubernetes-cluster-from-oracle-c66b8ce7cc37
   - https://carlosedp.medium.com/building-a-hybrid-x86-64-and-arm-kubernetes-cluster-e7f94ff6e51d
+
+## TODO
+
+- Document use of URL-based configuration
+- Support multiple ssh keys
+- OCI budget monitoring
+- HTTP/S edge server, Letsencrypt for Caddy
+- Dynamic DNS integration
+- Persistent block volumes would be great
+- Add hostname override for tailscaled setup
+- OCI NAT setup
+

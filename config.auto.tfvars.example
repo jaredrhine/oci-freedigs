@@ -4,7 +4,10 @@ availability_domain_map = {
   us-sanjose-1 = "Hrrb:US-SANJOSE-1-AD-1"
 }
 
-# Feel free to override default configuration values set in `variables.tf`
+# You must configure at least one server.
+# To stay within the free tier, build no more than:
+# - aarch64: up to 24GB RAM, up to 4 cores, up to 200GB boot
+# - plus amd64: 2x 1GB 1core compute nodes (the "micro" tier)
 
 compute_hosts = {
   home = {
@@ -36,3 +39,5 @@ compute_hosts = {
 #    disk_gb = 50
 #  }
 }
+
+# Feel free to override default configuration values set in `variables.tf`

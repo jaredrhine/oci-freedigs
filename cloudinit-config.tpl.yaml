@@ -1,0 +1,135 @@
+#cloud-config
+
+# https://cloudinit.readthedocs.io/en/latest/topics/modules.html
+# https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+
+### Users
+
+users:
+  - name: ${compute_username}
+    ssh_authorized_keys:
+      - ${compute_ssh_public_key}
+    shell: /usr/bin/bash
+    groups: sudo, users, docker
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+
+groups:
+  - docker
+
+ssh_pwauth: false
+
+### Packages
+
+apt:
+  sources:
+    docker.list:
+      source: deb https://download.docker.com/linux/ubuntu $RELEASE stable
+      keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    kubernetes.list:
+      source: deb https://apt.kubernetes.io/ kubernetes-xenial main
+      keyid: 59FE0256827269DC81578F928B57C5C2836F4BEB
+    tailscale.list:
+      source: deb https://pkgs.tailscale.com/stable/ubuntu $RELEASE main
+      keyid: 2596A99EAAB33821893C0A79458CA832957F5868
+
+packages:
+  - apt-transport-https
+  - buffer
+  - build-essential
+  - ctop
+  - ddclient
+  - debconf-utils
+  - debian-keyring
+  - debian-archive-keyring
+  - default-jre-headless
+  - direnv
+  - docker-ce
+  - docker-ce-cli
+  - dstat
+  - emacs-nox
+  - fakeroot
+  - fswatch
+  - fzf
+  - git-extras
+  - golang
+  - hwinfo
+  - iotop
+  - jq
+  - keychain
+  - kubeadm
+  - kubectl
+  - libbz2-dev
+  - libcurl4-openssl-dev
+  - libreadline-dev
+  - libsqlite3-dev
+  - libssl-dev
+  - lua5.3
+  - mailutils
+  - mosh
+  - netcat-openbsd
+  - nmap
+  - nodejs
+  - p7zip-full
+  - perl
+  - procps
+  - psutils
+  - pwgen
+  - pv
+  - python
+  - python-dev
+  - python3
+  - python3-dev
+  - ruby
+  - ruby-dev
+  - runit-systemd
+  - s3cmd
+  - s3fs
+  - s4cmd
+  - silversearcher-ag
+  - socat
+  - sshfs
+  - ssh-tools
+  - swaks
+  - tailscale
+  - tig
+  - tmux
+  - tree
+  - tshark
+  - unattended-upgrades
+  - uuid
+  - xpra
+  - zip
+  - zsh
+
+snap:
+  commands:
+    - snap install rustup --classic
+
+package_upgrade: true
+
+### Bootstrap commands
+
+write_files:
+- path: /etc/apt/apt.conf.d/51unattended-upgrades-mail
+  content: 'Unattended-Upgrade::Mail "root";'
+
+runcmd:
+  - "echo 'debconf debconf/frontend select noninteractive'|debconf-set-selections"
+  - rm -rf /var/lib/command-not-found
+  - apt remove --purge --yes command-not-found ubuntu-advantage-tools bolt
+  - apt autoremove --yes
+  - touch /home/${compute_username}/.hushlogin
+  - chown ${compute_username}:${compute_username} /home/${compute_username}/.hushlogin
+  - iptables -F
+  - netfilter-persistent save
+  - ufw reset
+  - tailscale up -authkey ${tailscale_auth_key}
+  - ufw allow in on tailscale0
+  - ufw allow 22/tcp
+  - ufw allow 41641/udp
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw reload
+  - ufw enable
+  - systemctl restart ssh
+  - systemctl restart docker
