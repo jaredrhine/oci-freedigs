@@ -9,6 +9,7 @@ users:
   - name: ${compute_username}
     ssh_authorized_keys:
       - ${compute_ssh_public_key}
+      - ${compute_ssh_public_key_backup}
     shell: /usr/bin/bash
     groups: sudo, users, docker
     sudo: "ALL=(ALL) NOPASSWD:ALL"
@@ -34,6 +35,10 @@ apt:
 
 packages:
   - apt-transport-https
+  - autossh
+  - awscli
+  - aws-shell
+  - bmon
   - buffer
   - build-essential
   - ctop
@@ -79,6 +84,7 @@ packages:
   - python-dev
   - python3
   - python3-dev
+  - rclone
   - ruby
   - ruby-dev
   - runit-systemd
@@ -112,9 +118,17 @@ package_upgrade: true
 write_files:
 - path: /etc/apt/apt.conf.d/51unattended-upgrades-mail
   content: 'Unattended-Upgrade::Mail "root";'
+- path: /etc/aliases
+  content: 'root: ${admin_email}'
+- path: /var/local/aws-auto/aws-auto.env
+  permissions: '0400'
+  content: |
+    AWS_ACCESS_KEY_ID=${aws_access_key_id}
+    AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}
 
 runcmd:
   - "echo 'debconf debconf/frontend select noninteractive'|debconf-set-selections"
+  - "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash -s"
   - rm -rf /var/lib/command-not-found
   - apt remove --purge --yes command-not-found ubuntu-advantage-tools bolt
   - apt autoremove --yes

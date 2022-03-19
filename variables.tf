@@ -58,7 +58,11 @@ variable user_ocid {}
 variable compartment_ocid {}
 variable compute_username {}
 variable compute_ssh_public_key {}
+variable compute_ssh_public_key_backup {}
+variable admin_email {}
 variable tailscale_auth_key {}
 variable signing_key_fingerprint {}
 variable signing_key_private_path {}
 variable cloudinit_script_url {}
+variable aws_access_key_id {}
+variable aws_secret_access_key {}

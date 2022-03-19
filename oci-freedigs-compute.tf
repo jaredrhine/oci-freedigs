@@ -50,8 +50,12 @@ resource oci_core_instance freedigs_compute {
 data "template_file" "cloudconfig" {
   template = "${file("${path.module}/cloudinit-config.tpl.yaml")}"
   vars = {
-    compute_username = var.compute_username,
+    admin_email = var.admin_email
+    aws_access_key_id = var.aws_access_key_id,
+    aws_secret_access_key = var.aws_secret_access_key,
     compute_ssh_public_key = var.compute_ssh_public_key,
+    compute_ssh_public_key_backup = var.compute_ssh_public_key_backup,
+    compute_username = var.compute_username,
     tailscale_auth_key = var.tailscale_auth_key,
   }
 }

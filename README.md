@@ -54,7 +54,7 @@ Standards:
 - [Tailscale](https://tailscale.com/) ([Wireguard](https://www.wireguard.com/)) for VPN. Tailscale DNS integration supported.
 - [`ufw`](https://en.wikipedia.org/wiki/Uncomplicated_Firewall) for firewall rules. TCP open on ports 22 (all interfaces) for ssh inbound. UDP open on 41641 for tailscale.
 - Minimal language frameworks installed: go, java, lua, nodejs, perl, python2, python3, ruby, rust
-- Extra packages installed: ag, buffer, build-essential, ctop, ddclient, direnv, docker, dstat, emacs-nox, fakeroot, fswatch, fzf, git, hwinfo, iotop, jq, keychain, kubeadm, kubectl, mosh, netcat, nmap, p7zip, procps, psutils, pv, pwgen, runit, s3cmd, s3fuse, s4cmd, socat, sshfs, ssh-tools, swaks, tig, tmux, tree, tshark, unicorn, unintended-upgrades, uuid, zip, zsh. Libraries for bz, curl, readline, sqlite, openssl.
+- Extra packages installed: ag, autossh, awscli, aws-shell, bmon, buffer, build-essential, ctop, ddclient, direnv, docker, dstat, emacs-nox, fakeroot, fswatch, fzf, git, hwinfo, iotop, jq, keychain, kubeadm, kubectl, mosh, netcat, nmap, p7zip, procps, psutils, pv, pwgen, rclone, runit, s3cmd, s3fuse, s4cmd, socat, sshfs, ssh-tools, swaks, tig, tmux, tree, tshark, unicorn, unintended-upgrades, uuid, zip, zsh. Libraries for bz, curl, readline, sqlite, openssl.
 
 Terraform components:
 - Compute instance (`oci_core_instance freedigs_compute`)
