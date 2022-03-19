@@ -52,12 +52,12 @@ Standards:
 - Ubuntu 20.04 for OS
 - Bash for shell
 - [Tailscale](https://tailscale.com/) ([Wireguard](https://www.wireguard.com/)) for VPN. Tailscale DNS integration supported.
-- [`ufw`](https://en.wikipedia.org/wiki/Uncomplicated_Firewall) for firewall rules. TCP open on ports 22 (all interfaces) for ssh inbound. UDP open on 41641 for tailscale.
+- [`ufw`](https://en.wikipedia.org/wiki/Uncomplicated_Firewall) for firewall rules. TCP open on ports 22 (all interfaces) for ssh inbound. UDP open on 41641 for tailscale. Provider network passes all traffic.
 - Minimal language frameworks installed: go, java, lua, nodejs, perl, python2, python3, ruby, rust
-- Extra packages installed: ag, autossh, awscli, aws-shell, bmon, buffer, build-essential, ctop, ddclient, direnv, docker, dstat, emacs-nox, fakeroot, fswatch, fzf, git, hwinfo, iotop, jq, keychain, kubeadm, kubectl, mosh, netcat, nmap, p7zip, procps, psutils, pv, pwgen, rclone, runit, s3cmd, s3fuse, s4cmd, socat, sshfs, ssh-tools, swaks, tig, tmux, tree, tshark, unicorn, unintended-upgrades, uuid, zip, zsh. Libraries for bz, curl, readline, sqlite, openssl.
+- Extra packages installed: ag, autossh, awscli, aws-shell, bmon, buffer, build-essential, ctop, direnv, docker, dstat, emacs-nox, fakeroot, fswatch, fzf, git, hwinfo, iotop, jq, keychain, kubeadm, kubectl, mosh, netcat, nmap, p7zip, procps, psutils, pv, pwgen, rclone, runit, s3cmd, s3fuse, s4cmd, socat, sshfs, ssh-tools, swaks, tig, tmux, tree, tshark, unicorn, unintended-upgrades, uuid, zip, zsh. Libraries for bz, curl, readline, sqlite, openssl.
 
 Terraform components:
-- Compute instance (`oci_core_instance freedigs_compute`)
+- Compute instance (`oci_core_instance.freedigs_compute`)
   - Shape: CPU arch, core count, RAM size
   - Boot volume
     - Block device size
@@ -68,10 +68,12 @@ Terraform components:
     - Username
     - SSH public key
 - Network
-  - VCN (`oci_core_vcn freedigs_vcn_main`)
-  - Subnet (`oci_core_subnet freedigs_subnet_main`)
-  - Gateway (`oci_core_internet_gateway freedigs_gateway_main`)
-  - Routes (`oci_core_default_route_table freedigs_routes_main`)
+  - VCN (`oci_core_vcn.freedigs_vcn_main`)
+  - Subnet (`oci_core_subnet.freedigs_subnet_main`)
+  - Gateway (`oci_core_internet_gateway.freedigs_gateway_main`)
+  - Routes (`oci_core_default_route_table.freedigs_routes_main`)
+  - Security groups (`oci_core_network_security_group.freedigs_security_group`)
+  - Network rule (`oci_core_network_security_group_security_rule.freedigs_rules_ingress`)
 
 ## Recommended setup procedure
 
@@ -162,8 +164,6 @@ Terraform.
 - Support multiple ssh keys
 - OCI budget monitoring
 - HTTP/S edge server, Letsencrypt for Caddy
-- Dynamic DNS integration
 - Persistent block volumes would be great
 - Add hostname override for tailscaled setup
 - OCI NAT setup
-

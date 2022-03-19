@@ -26,6 +26,7 @@ resource oci_core_instance freedigs_compute {
     assign_public_ip = "true"
     assign_private_dns_record = "true"
     subnet_id = oci_core_subnet.freedigs_subnet_main.id
+    nsg_ids = [oci_core_network_security_group.freedigs_security_group.id]
   }
 
   display_name = each.value.hostname

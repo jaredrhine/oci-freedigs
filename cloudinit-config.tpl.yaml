@@ -42,7 +42,6 @@ packages:
   - buffer
   - build-essential
   - ctop
-  - ddclient
   - debconf-utils
   - debian-keyring
   - debian-archive-keyring
